@@ -51,7 +51,8 @@ Vagrant.configure("2") do |config|
   config.vm.provider "virtualbox" do |v|
   #   # Display the VirtualBox GUI when booting the machine
   #  v.gui = true
-    v.memory = "5292"
+    v.memory = 8192
+    v.cpus = 2
     v.name = "Elastic Docker"
   #
   #   # Customize the amount of memory on the VM:
