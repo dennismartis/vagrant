@@ -73,5 +73,5 @@ Vagrant.configure("2") do |config|
     git clone https://github.com/dennismartis/docker
   SHELL
 
-  config.vm.provision :docker_compose, yml: "/home/vagrant/docker/elk-tomcat/docker-compose.yml", run: "always"
+  config.vm.provision :docker_compose, yml: "/home/vagrant/docker/elastic_stack/docker-compose.yml", run: "always"
 end
