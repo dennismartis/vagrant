@@ -12,7 +12,7 @@ Vagrant.configure("2") do |config|
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://vagrantcloud.com/search.
-  config.vm.box = "vineetpalan/centos7-docker"
+  config.vm.box = "centos/7"
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
@@ -49,22 +49,11 @@ Vagrant.configure("2") do |config|
   # Example for VirtualBox:
   #
   config.vm.provider "virtualbox" do |v|
-  #   # Display the VirtualBox GUI when booting the machine
-  #  v.gui = true
     v.memory = 8192
     v.cpus = 2
     v.name = "Elastic Docker"
-  #
-  #   # Customize the amount of memory on the VM:
-  #   vb.memory = "1024"
   end
-  #
-  # View the documentation for the provider you are using for more
-  # information on available options.
 
-  # Enable provisioning with a shell script. Additional provisioners such as
-  # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
-  # documentation for more information about their specific syntax and use.
   config.vm.provision "shell", inline: <<-SHELL
     yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
     yum -y update
@@ -73,5 +62,7 @@ Vagrant.configure("2") do |config|
     git clone https://github.com/dennismartis/docker
   SHELL
 
+  config.vm.provision :"docker"
   config.vm.provision :docker_compose, yml: "/home/vagrant/docker/elastic_stack/docker-compose.yml", run: "always"
+
 end
