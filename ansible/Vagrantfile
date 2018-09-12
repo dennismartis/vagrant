@@ -1,19 +1,40 @@
 Vagrant.configure("2") do |config|
 
-  config.vm.box = "centos/7"
+  config.ssh.insert_key = false
+  config.vbguest.auto_update = false
 
-  config.vm.define "node1" do |machine|
-    machine.vm.network "private_network", ip: "172.17.177.21"
+  (1..3).each do |i|
+    config.vm.define "node-#{i}" do |node|
+      node.vm.network "private_network", ip: "172.17.177.#{20 + i}"
+      node.vm.box = "ubuntu/trusty64"
+      node.vbguest.auto_update = false
+      node.vm.provider "virtualbox" do |v|
+        v.name = "node-#{i}"
+      end
+    end
   end
 
-  config.vm.define "node2" do |machine|
-    machine.vm.network "private_network", ip: "172.17.177.22"
+  
+  config.vm.define "controller" do |controller|
+    
+    controller.vm.box = "centos/7"
+    controller.vm.network "forwarded_port", guest: 22, host: 2233
+    controller.vm.network "private_network", ip: "172.17.177.11"
+    
+    controller.vm.provider "virtualbox" do |v|
+      v.name = "ansible-controller-02"
+    end
+    
+    controller.vm.provision "shell", inline: <<-SHELL
+      yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+      yum -y update
+      yum install -y git vim ansible wget
+      chsh -s /usr/bin/fish vagrant
+      wget https://download.opensuse.org/repositories/shells:fish:release:2/CentOS_7/shells:fish:release:2.repo -P /etc/yum.repos.d
+      yum -y install fish
+      curl -Lo /home/vagrant/.config/fish/functions/fisher.fish --create-dirs https://git.io/fisher
+      chown -R vagrant:vagrant /home/vagrant/.config/
+      usermod -s /usr/bin/fish vagrant
+    SHELL
   end
-
-  config.vm.define 'controller' do |machine|
-    machine.vm.network "private_network", ip: "172.17.177.11"
-
-    machine.vm.provision :"ansible_local"
-  end
-
 end

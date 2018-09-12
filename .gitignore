@@ -1,1 +1,6 @@
 */.vagrant
+rundeck/.ssh/dennis_cgk.key
+awx/.ssh/dennis_cgk.key
+awx/.ssh/private_key_rundeck_vm
+rundeck/.ssh/private_key_rundeck_vm
+ansible/insecure_private_key

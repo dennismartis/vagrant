@@ -1,0 +1,34 @@
+Vagrant.configure("2") do |config|
+
+  #config.ssh.insert_key = false
+
+  config.vm.box = "centos/7"
+  config.vm.network "forwarded_port", guest: 4440, host: 4440
+  #config.vm.network "forwarded_port", guest: 22, host: 2200
+  config.vm.network "private_network", ip: "172.17.177.17"
+  config.vm.synced_folder ".", "/vagrant", type: "virtualbox"
+  config.vm.provider "virtualbox" do |v|
+    v.memory = 4096
+    v.cpus = 2
+    v.name = "awx"
+  end
+
+    #controller.vm.provision :"ansible_local"
+
+  config.vm.provision "shell", inline: <<-SHELL
+    yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+    yum -y update
+    yum install -y git vim ansible wget gettext docker nodejs npn gcc-c++ bzip2 python-docker-py
+    wget https://download.opensuse.org/repositories/shells:fish:release:2/CentOS_7/shells:fish:release:2.repo -P /etc/yum.repos.d
+    yum -y install fish
+    chsh -s /usr/bin/fish vagrant
+    curl -Lo /home/vagrant/.config/fish/functions/fisher.fish --create-dirs https://git.io/fisher
+    chown -R vagrant:vagrant /home/vagrant/.config/
+    usermod -s /usr/bin/fish vagrant
+    systemctl start docker
+    systemctl enable docker
+    git clone https://github.com/ansible/awx.git /tmp/
+    ansible-playbook -i /tmp/awx/inventory /tmp/awx/install.yml
+  SHELL
+
+end
