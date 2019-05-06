@@ -5,7 +5,6 @@ Vagrant.configure("2") do |config|
   config.vm.network :forwarded_port, guest: 8080, host: "8080"
   config.vm.provider "virtualbox" do |v|
     v.name = "jenkins-master"
-    v.linked_clone = true
   end
   config.hostsupdater.aliases = ["jenkins.localdomain.com"]
   config.vm.provider "virtualbox" do |v|
@@ -14,6 +13,8 @@ Vagrant.configure("2") do |config|
   end
   config.vm.provision "shell" do |s|
     s.inline = <<-SHELL
+      sudo yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+      subscription-manager repos --enable "rhel-*-optional-rpms" --enable "rhel-*-extras-rpms"  --enable "rhel-ha-for-rhel-*-server-rpms"
       sudo yum -y update
       sudo yum -y install wget
       sudo wget -O /etc/yum.repos.d/jenkins.repo http://pkg.jenkins.io/redhat-stable/jenkins.repo
